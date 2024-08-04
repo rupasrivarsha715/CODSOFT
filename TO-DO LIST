@@ -1,38 +1,84 @@
-#To-Do List Application
+#TO DO LIST APPLICATION
+import tkinter as tk
+def add_task():
+    task = entry_task.get()
+    if task:
+        tasks.append(task)
+        update_listbox()
+        entry_task.delete(0, tk.END)
+def remove_task():
+    selected_task = listbox_tasks.curselection()
+    if selected_task:
+        index = selected_task[0]
+        if index < len(tasks):
+            tasks.pop(index-1)
+            update_listbox()
+def complete_task():
+    selected_task = listbox_tasks.curselection()
+    if selected_task:
+        index = selected_task[0]
+        if index < len(tasks):
+            task = tasks.pop(index-1)
+            tasks_completed.append(task)
+            update_listbox()
+def on_task_select(event):
+    listbox_tasks.selection_clear(0, tk.END)
+    selected_task = listbox_tasks.curselection()
+    if selected_task:
+        index = selected_task[0]
+        if index < len(tasks):
+            listbox_tasks.itemconfig(index, {'bg': 'lightblue'})
+def update_listbox():
+    listbox_tasks.delete(0, tk.END)
+    listbox_tasks.insert(tk.END, "Tasks are:")
+    for i, task in enumerate(tasks, start=1):
+        listbox_tasks.insert(tk.END, f"{i}. {task}")
+    if tasks_completed:
+        listbox_tasks.insert(tk.END, "")
+        listbox_tasks.insert(tk.END, "Completed Tasks:")
+        for task in tasks_completed:
+            listbox_tasks.insert(tk.END, task)
+            listbox_tasks.itemconfig(tk.END, {'bg': 'lightgreen'})
+    on_task_select(None)
+def on_entry_click(event):
+    if entry_task.get() == "Add Your Tasks...":
+        entry_task.delete(0, tk.END)
+        entry_task.config(fg='black')  
+def on_entry_leave(event):
+    if entry_task.get() == "":
+        entry_task.insert(0, "Add Your Tasks...")
+        entry_task.config(fg='black')  
+root = tk.Tk()
+root.title("To-Do List Application")
+root.configure(bg="lightblue")
+title_frame = tk.Frame(root, bg="lightgreen", bd=1, relief="solid")  
+title_frame.pack(pady=(50, 10), padx=400, fill="x")  
+title_label = tk.Label(title_frame, text="To Do List Application", font=("Helvetica", 24, "bold"), fg="black", bg="lightgreen")
+title_label.pack(pady=10)
+lightgreen_frame = tk.Frame(root, bg="lightgreen", bd=1, relief="solid")  
+lightgreen_frame.pack(pady=(10, 50), padx=400, fill="both", expand=True)
+entry_task_frame = tk.Frame(lightgreen_frame, bg="lightgreen", bd=0)  
+entry_task_frame.pack(pady=(20, 5), padx=20, fill="x") 
+entry_task = tk.Entry(entry_task_frame, width=40, font=("Helvetica", 14), fg='black', bg="orange") 
+entry_task.insert(0, "Add Your Tasks...")
+entry_task.bind('<FocusIn>', on_entry_click)
+entry_task.bind('<FocusOut>', on_entry_leave)
+entry_task.pack(pady=10, padx=10)
+lightpink_frame = tk.Frame(lightgreen_frame, bg="lightgreen", bd=0)  
+lightpink_frame.pack(pady=5, padx=20)  
+listbox_tasks = tk.Listbox(lightpink_frame, width=60, height=13, font=("Helvetica", 14), selectmode=tk.SINGLE, bg="lightpink",
+                           selectbackground="lightpink", selectforeground="black", activestyle="none", exportselection=False)  
+listbox_tasks.pack(pady=10, padx=10)
+listbox_tasks.bind('<Button-1>', on_task_select)
+button_frame = tk.Frame(lightgreen_frame, bg="lightgreen", bd=0)  
+button_frame.pack(pady=(10, 20))  
+button_add = tk.Button(button_frame, text="Add Task", font=("Helvetica", 12), bg="orange", fg="black", width=12, height=1, command=add_task)
+button_add.pack(side=tk.LEFT, padx=10)
+button_remove = tk.Button(button_frame, text="Remove Task", font=("Helvetica", 12), bg="red", fg="black", width=12, height=1, command=remove_task)
+button_remove.pack(side=tk.LEFT, padx=10)
+button_complete = tk.Button(button_frame, text="Complete Task", font=("Helvetica", 12), bg="green", fg="black", width=14, height=1, command=complete_task)
+button_complete.pack(side=tk.LEFT, padx=10)
 tasks = []
-def add_task(task):
-    tasks.append(task)
-    print(f"Task '{task}' added successfully.")
-def view_tasks():
-    if not tasks:
-        print("No tasks in the list.")
-    else:
-        for i, task in enumerate(tasks, 1):
-            print(f"{i}. {task}")
-def remove_task(index):
-    if 1 <= index <= len(tasks):
-        removed_task = tasks.pop(index - 1)
-        print(f"Task '{removed_task}' removed successfully.")
-    else:
-        print("Invalid task number.")
-while True:
-    print("\n--- To-Do List Menu ---")
-    print("1. Add Task")
-    print("2. View Tasks")
-    print("3. Remove Task")
-    print("4. Quit")
-    choice = input("Enter your choice (1-4): ")
-    if choice == '1':
-        task = input("Enter the task: ")
-        add_task(task)
-    elif choice == '2':
-        view_tasks()
-    elif choice == '3':
-        view_tasks()
-        index = int(input("Enter the number of the task to remove: "))
-        remove_task(index)
-    elif choice == '4':
-        print("Thank you for using the To-Do List. Goodbye!")
-        break
-    else:
-        print("Invalid choice. Please try again.")
+tasks_completed = []
+root.mainloop()
+   
